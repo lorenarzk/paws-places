@@ -1,13 +1,4 @@
-export interface Place {
-  id: string;
-  title: string;
-  category: 'Park' | 'Cafe' | 'Hotel' | 'Trail';
-  image: string;
-  rating: number;
-  description: string;
-  amenities: string[];
-  rules: string[];
-}
+import { Place, User, Review } from './types';
 export const MOCK_PLACES: Place[] = [
   {
     id: 'p1',
@@ -60,6 +51,17 @@ export const MOCK_PLACES: Place[] = [
     rules: ['Dogs must be tethered to tables', 'Vaccination proof on request']
   }
 ];
-export const MOCK_USERS = [
-  { id: 'u1', name: 'Pet Lover' }
+export const MOCK_USERS: User[] = [
+  { id: 'u1', name: 'Pet Lover', favorites: ['p1', 'p3'] }
+];
+export const MOCK_REVIEWS: Review[] = [
+  {
+    id: 'r1',
+    placeId: 'p1',
+    userId: 'u1',
+    userName: 'Pet Lover',
+    rating: 5,
+    comment: 'Best doggy latte ever!',
+    timestamp: Date.now()
+  }
 ];

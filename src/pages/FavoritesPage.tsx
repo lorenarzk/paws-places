@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Navbar } from '@/components/layout/Navbar';
@@ -6,11 +6,11 @@ import { PlaceCard } from '@/components/places/PlaceCard';
 import { PlaceDetailSheet } from '@/components/places/PlaceDetailSheet';
 import { useFavorites } from '@/hooks/use-places';
 import { Button } from '@/components/ui/button';
-import { Heart } from 'lucide-react';
-import type { Place } from '@shared/types';
+import { Heart, Search } from 'lucide-react';
+import { Place } from '@shared/types';
 export function FavoritesPage() {
   const { data: favorites, isLoading } = useFavorites();
-  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [selectedPlace, setSelectedPlace] = React.useState<Place | null>(null);
   return (
     <div className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
       <Navbar />
@@ -48,8 +48,8 @@ export function FavoritesPage() {
                     transition={{ duration: 0.3 }}
                   >
                     <PlaceCard
-                      place={place as Place}
-                      onClick={() => setSelectedPlace(place as Place)}
+                      place={place as any}
+                      onClick={() => setSelectedPlace(place)}
                     />
                   </motion.div>
                 ))}
@@ -72,7 +72,7 @@ export function FavoritesPage() {
         </div>
       </main>
       <PlaceDetailSheet
-        place={selectedPlace}
+        place={selectedPlace as any}
         open={!!selectedPlace}
         onOpenChange={(open) => !open && setSelectedPlace(null)}
       />

@@ -2,23 +2,25 @@ import React from 'react';
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Heart, Star, Info, CheckCircle2 } from 'lucide-react';
+import { Heart, Star, Info, CheckCircle2, Loader2 } from 'lucide-react';
 import { Place } from '@shared/mock-data';
+import { useUser, useToggleFavorite } from '@/hooks/use-places';
+import { cn } from '@/lib/utils';
 interface PlaceDetailSheetProps {
   place: Place | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 export function PlaceDetailSheet({ place, open, onOpenChange }: PlaceDetailSheetProps) {
+  const { data: user } = useUser();
+  const toggleFavorite = useToggleFavorite();
   if (!place) return null;
+  const isFavorited = user?.favorites.includes(place.id);
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-xl overflow-y-auto no-scrollbar">
+      <SheetContent className="w-full sm:max-w-xl overflow-y-auto no-scrollbar border-l-4 border-primary/20">
         <div className="relative h-64 -mx-6 mb-6">
           <img
             src={place.image}
@@ -36,8 +38,20 @@ export function PlaceDetailSheet({ place, open, onOpenChange }: PlaceDetailSheet
         </div>
         <div className="space-y-8">
           <div className="flex gap-4">
-            <Button className="flex-1 h-12 text-lg font-sketch bg-primary hover:bg-primary/90 sketch-border-sm">
-              <Heart className="mr-2 h-5 w-5" /> Save to Favorites
+            <Button 
+              onClick={() => toggleFavorite.mutate(place.id)}
+              disabled={toggleFavorite.isPending}
+              className={cn(
+                "flex-1 h-12 text-lg font-sketch bg-primary hover:bg-primary/90 sketch-border-sm transition-all",
+                isFavorited && "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              )}
+            >
+              {toggleFavorite.isPending ? (
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              ) : (
+                <Heart className={cn("mr-2 h-5 w-5", isFavorited && "fill-current")} />
+              )}
+              {isFavorited ? 'Saved in Scrapbook' : 'Save to Favorites'}
             </Button>
           </div>
           <div className="space-y-4">
