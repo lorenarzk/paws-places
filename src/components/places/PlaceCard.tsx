@@ -1,8 +1,8 @@
 import React from 'react';
-import { Star, MapPin } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { Place } from '@shared/mock-data';
+import type { Place } from '@shared/types';
 interface PlaceCardProps {
   place: Place;
   onClick: () => void;

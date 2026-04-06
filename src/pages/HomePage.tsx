@@ -5,19 +5,14 @@ import { HeroSection } from '@/components/home/HeroSection';
 import { CategoryFilters } from '@/components/home/CategoryFilters';
 import { PlaceCard } from '@/components/places/PlaceCard';
 import { PlaceDetailSheet } from '@/components/places/PlaceDetailSheet';
-import { MOCK_PLACES, Place } from '@shared/mock-data';
+import { AddPlaceDialog } from '@/components/places/AddPlaceDialog';
+import { usePlaces } from '@/hooks/use-places';
+import type { Place } from '@shared/types';
 import { Toaster } from '@/components/ui/sonner';
 export function HomePage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
-  const filteredPlaces = useMemo(() => {
-    if (activeCategory === 'All') return MOCK_PLACES;
-    // Map button label to internal category (plural to singular)
-    const singularCategory = activeCategory.endsWith('s') 
-      ? activeCategory.slice(0, -1) 
-      : activeCategory;
-    return MOCK_PLACES.filter((p) => p.category === singularCategory);
-  }, [activeCategory]);
+  const { data: places, isLoading } = usePlaces(activeCategory);
   return (
     <div className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
       <Navbar />
@@ -26,16 +21,25 @@ export function HomePage() {
           <HeroSection />
           <div className="my-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b-2 border-primary/20 pb-4">
-              <h2 className="text-3xl font-sketch">Explore Spots</h2>
-              <CategoryFilters 
-                active={activeCategory} 
-                onSelect={setActiveCategory} 
-              />
+              <div className="space-y-1">
+                <h2 className="text-3xl font-sketch">Explore Spots</h2>
+                <p className="text-sm text-muted-foreground">Find the perfect place for your furry friends</p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <CategoryFilters active={activeCategory} onSelect={setActiveCategory} />
+                <AddPlaceDialog />
+              </div>
             </div>
-            {filteredPlaces.length > 0 ? (
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="h-80 bg-muted animate-pulse sketch-border" />
+                ))}
+              </div>
+            ) : places && places.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <AnimatePresence mode="popLayout">
-                  {filteredPlaces.map((place) => (
+                  {places.map((place) => (
                     <motion.div
                       key={place.id}
                       layout
@@ -44,21 +48,14 @@ export function HomePage() {
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <PlaceCard 
-                        place={place} 
-                        onClick={() => setSelectedPlace(place)} 
-                      />
+                      <PlaceCard place={place} onClick={() => setSelectedPlace(place)} />
                     </motion.div>
                   ))}
                 </AnimatePresence>
               </div>
             ) : (
               <div className="py-24 text-center">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="space-y-4"
-                >
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
                   <p className="text-6xl">🦴</p>
                   <h3 className="text-2xl font-sketch">Nothing here yet...</h3>
                   <p className="text-muted-foreground">Try a different category to sniff out some fun!</p>
@@ -68,10 +65,10 @@ export function HomePage() {
           </div>
         </div>
       </main>
-      <PlaceDetailSheet 
-        place={selectedPlace} 
-        open={!!selectedPlace} 
-        onOpenChange={(open) => !open && setSelectedPlace(null)} 
+      <PlaceDetailSheet
+        place={selectedPlace}
+        open={!!selectedPlace}
+        onOpenChange={(open) => !open && setSelectedPlace(null)}
       />
       <Toaster richColors position="top-center" />
       <footer className="border-t-2 border-primary/20 bg-muted/30 py-12">

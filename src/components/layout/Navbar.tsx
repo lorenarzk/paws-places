@@ -6,6 +6,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 export function Navbar() {
   const location = useLocation();
+  const navItems = [
+    { label: 'Explore', path: '/' },
+    { label: 'About', path: '/about' },
+  ];
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -17,22 +21,24 @@ export function Navbar() {
             <span className="text-2xl font-sketch text-foreground">Paws & Places</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Button 
-              variant="ghost" 
-              asChild
-              className={cn(
-                "font-medium hover:text-primary",
-                location.pathname === '/' && "text-primary border-b-2 border-primary rounded-none"
-              )}
-            >
-              <Link to="/">Explore</Link>
-            </Button>
-            <Button variant="ghost" className="font-medium hover:text-primary">About</Button>
+            {navItems.map((item) => (
+              <Button
+                key={item.path}
+                variant="ghost"
+                asChild
+                className={cn(
+                  "font-medium hover:text-primary transition-all",
+                  location.pathname === item.path && "text-primary border-b-2 border-primary rounded-none"
+                )}
+              >
+                <Link to={item.path}>{item.label}</Link>
+              </Button>
+            ))}
           </nav>
           <div className="flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               asChild
               className={cn(
                 "text-muted-foreground hover:text-primary transition-colors",
