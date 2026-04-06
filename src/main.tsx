@@ -1,4 +1,4 @@
-import React, { StrictMode } from 'react'
+import { StrictMode } from 'react'
 import '@/lib/errorReporter';
 import { enableMapSet } from "immer";
 enableMapSet();

@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 import { Heart, Dog, MapPin, Star, Coffee, Trees } from 'lucide-react';
