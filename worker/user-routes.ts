@@ -14,6 +14,16 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     }
     return ok(c, items);
   });
+
+  app.post('/api/places', async (c) => {
+    const data = await c.req.json() as any;
+    const place = await PlaceEntity.create(c.env, {
+      id: crypto.randomUUID(),
+      rating: 0,
+      ...data
+    });
+    return ok(c, place);
+  });
   // USERS & FAVORITES
   app.get('/api/users/:id', async (c) => {
     const user = new UserEntity(c.env, c.req.param('id'));

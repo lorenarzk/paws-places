@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Navbar } from '@/components/layout/Navbar';
@@ -10,7 +10,7 @@ import { Heart, Search } from 'lucide-react';
 import { Place } from '@shared/types';
 export function FavoritesPage() {
   const { data: favorites, isLoading } = useFavorites();
-  const [selectedPlace, setSelectedPlace] = React.useState<Place | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   return (
     <div className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
       <Navbar />

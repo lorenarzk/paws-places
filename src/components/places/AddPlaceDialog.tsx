@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -36,7 +36,7 @@ const formSchema = z.object({
   image: z.string().url('Please provide a valid image URL'),
 });
 export function AddPlaceDialog() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const createPlace = useCreatePlace();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,14 +47,21 @@ export function AddPlaceDialog() {
       image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&q=80&w=800',
     },
   });
+
+  useEffect(() => {
+    if (createPlace.isSuccess) {
+      setOpen(false);
+      form.reset();
+      createPlace.reset();
+    }
+  }, [createPlace.isSuccess, createPlace, form]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await createPlace.mutateAsync({
       ...values,
       amenities: ['New Spot'],
       rules: ['Standard pet rules apply'],
     });
-    setOpen(false);
-    form.reset();
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -88,7 +95,7 @@ export function AddPlaceDialog() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="sketch-border-sm">
                         <SelectValue placeholder="Select a category" />

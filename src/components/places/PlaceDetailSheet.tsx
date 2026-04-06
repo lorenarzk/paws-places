@@ -1,4 +1,4 @@
-import React from 'react';
+import { FormEvent, useState } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -21,11 +21,11 @@ export function PlaceDetailSheet({ place, open, onOpenChange }: PlaceDetailSheet
   const toggleFavorite = useToggleFavorite();
   const { data: reviews, isLoading: reviewsLoading } = useReviews(place?.id || '');
   const submitReview = useSubmitReview(place?.id || '');
-  const [comment, setComment] = React.useState('');
-  const [rating, setRating] = React.useState(5);
+  const [comment, setComment] = useState('');
+  const [rating, setRating] = useState(5);
   if (!place) return null;
   const isFavorited = user?.favorites.includes(place.id);
-  const handleSubmitReview = (e: React.FormEvent) => {
+  const handleSubmitReview = (e: FormEvent) => {
     e.preventDefault();
     if (!comment.trim()) return;
     submitReview.mutate({ rating, comment }, {
