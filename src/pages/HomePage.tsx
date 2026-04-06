@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/home/HeroSection';
@@ -6,18 +6,34 @@ import { CategoryFilters } from '@/components/home/CategoryFilters';
 import { PlaceCard } from '@/components/places/PlaceCard';
 import { PlaceDetailSheet } from '@/components/places/PlaceDetailSheet';
 import { AddPlaceDialog } from '@/components/places/AddPlaceDialog';
-import { usePlaces } from '@/hooks/use-places';
+import { usePlaces, useGeolocation, useRealPlaces } from '@/hooks/use-places';
 import type { Place } from '@shared/types';
 import { Toaster } from '@/components/ui/sonner';
+import { MapPin, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 export function HomePage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
-  const { data: places, isLoading } = usePlaces(activeCategory);
+  const { location, requestLocation } = useGeolocation();
+  const { data: seedPlaces, isLoading: isSeedLoading } = usePlaces(activeCategory);
+  const { data: realPlaces, isLoading: isRealLoading } = useRealPlaces(location?.lat, location?.lon);
+  const combinedPlaces = useMemo(() => {
+    let list = [...(seedPlaces || [])];
+    if (realPlaces) {
+      list = [...list, ...realPlaces];
+    }
+    if (activeCategory !== 'All') {
+      return list.filter(p => p.category === activeCategory || (activeCategory.endsWith('s') && p.category === activeCategory.slice(0, -1)));
+    }
+    return list;
+  }, [seedPlaces, realPlaces, activeCategory]);
+  const isLoading = isSeedLoading || (location && isRealLoading);
   return (
     <div className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-8 md:py-12">
+        <div className="py-8 md:py-10 lg:py-12">
           <HeroSection />
           <div className="my-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b-2 border-primary/20 pb-4">
@@ -26,6 +42,14 @@ export function HomePage() {
                 <p className="text-sm text-muted-foreground">Find the perfect place for your furry friends</p>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-4">
+                <Button 
+                  onClick={requestLocation}
+                  variant={location ? "secondary" : "outline"}
+                  className={cn("sketch-border-sm gap-2", location && "bg-secondary text-secondary-foreground")}
+                >
+                  {isRealLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
+                  {location ? 'Nearby Active' : 'Find Near Me'}
+                </Button>
                 <CategoryFilters active={activeCategory} onSelect={setActiveCategory} />
                 <AddPlaceDialog />
               </div>
@@ -36,10 +60,10 @@ export function HomePage() {
                   <div key={i} className="h-80 bg-muted animate-pulse sketch-border" />
                 ))}
               </div>
-            ) : places && places.length > 0 ? (
+            ) : combinedPlaces.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <AnimatePresence mode="popLayout">
-                  {places.map((place) => (
+                  {combinedPlaces.map((place) => (
                     <motion.div
                       key={place.id}
                       layout
@@ -58,7 +82,7 @@ export function HomePage() {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
                   <p className="text-6xl">🦴</p>
                   <h3 className="text-2xl font-sketch">Nothing here yet...</h3>
-                  <p className="text-muted-foreground">Try a different category to sniff out some fun!</p>
+                  <p className="text-muted-foreground">Try a different category or search area!</p>
                 </motion.div>
               </div>
             )}

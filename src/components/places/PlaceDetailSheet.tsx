@@ -4,7 +4,6 @@ import {
   SheetContent,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Heart, Star, Info, CheckCircle2, Loader2, MessageSquare, Send } from 'lucide-react';
 import type { Place } from '@shared/types';
@@ -24,7 +23,8 @@ export function PlaceDetailSheet({ place, open, onOpenChange }: PlaceDetailSheet
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(5);
   if (!place) return null;
-  const isFavorited = user?.favorites.includes(place.id);
+  const isFavorited = user?.favorites?.includes(place.id);
+  const isRealWorld = place.id.startsWith('osm-');
   const handleSubmitReview = (e: FormEvent) => {
     e.preventDefault();
     if (!comment.trim()) return;
@@ -44,7 +44,7 @@ export function PlaceDetailSheet({ place, open, onOpenChange }: PlaceDetailSheet
           <div className="absolute bottom-6 left-6 text-white">
             <div className="flex items-center gap-2 mb-2">
               <Star className="h-5 w-5 fill-primary text-primary" />
-              <span className="font-bold text-xl">{place.rating || 'New'}</span>
+              <span className="font-bold text-xl">{place.rating > 0 ? place.rating : (isRealWorld ? 'New Spot' : 'Verified')}</span>
             </div>
             <h2 className="text-4xl font-sketch">{place.title}</h2>
           </div>
@@ -68,16 +68,21 @@ export function PlaceDetailSheet({ place, open, onOpenChange }: PlaceDetailSheet
           <div className="space-y-4">
             <h3 className="text-xl font-sketch flex items-center gap-2"><CheckCircle2 className="h-5 w-5 text-primary" /> Rules</h3>
             <ul className="grid grid-cols-1 gap-3">
-              {place.rules.map((rule, idx) => (
+              {(place.rules && place.rules.length > 0) ? place.rules.map((rule, idx) => (
                 <li key={idx} className="flex items-center gap-3 p-3 bg-muted/50 sketch-border-sm">
                   <div className="w-2 h-2 rounded-full bg-primary" />
                   <span className="text-sm font-medium">{rule}</span>
                 </li>
-              ))}
+              )) : (
+                <li className="flex items-center gap-3 p-3 bg-muted/50 sketch-border-sm">
+                  <div className="w-2 h-2 rounded-full bg-primary" />
+                  <span className="text-sm font-medium italic">Standard pet etiquette applies here.</span>
+                </li>
+              )}
             </ul>
           </div>
           <div className="space-y-6 pb-10">
-            <h3 className="text-xl font-sketch flex items-center gap-2"><MessageSquare className="h-5 w-5 text-primary" /> Community Paws</h3>
+            <h3 className="text-xl font-sketch flex items-center gap-2"><MessageSquare className="h-5 w-5 text-primary" /> Community Barks</h3>
             <form onSubmit={handleSubmitReview} className="space-y-3 bg-muted/30 p-4 sketch-border-sm">
               <div className="flex gap-2 mb-2">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -86,8 +91,8 @@ export function PlaceDetailSheet({ place, open, onOpenChange }: PlaceDetailSheet
                   </button>
                 ))}
               </div>
-              <Textarea 
-                placeholder="Share your experience..." 
+              <Textarea
+                placeholder="Share your experience..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 className="sketch-border-sm bg-background border-none"

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 import { Heart, Dog, MapPin, Star, Coffee, Trees } from 'lucide-react';
+import { cn } from '@/lib/utils';
 export function AboutPage() {
   const cards = [
     {
@@ -27,7 +28,7 @@ export function AboutPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-12 md:py-20 lg:py-24">
+        <div className="py-8 md:py-10 lg:py-12">
           <header className="text-center space-y-6 mb-20">
             <motion.div
               initial={{ rotate: -10, scale: 0.8 }}
@@ -81,9 +82,9 @@ export function AboutPage() {
                 </ul>
               </div>
               <div className="aspect-video sketch-border overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&q=80&w=800" 
-                  className="w-full h-full object-cover" 
+                <img
+                  src="https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&q=80&w=800"
+                  className="w-full h-full object-cover"
                   alt="Happy dog exploring"
                 />
               </div>
@@ -100,5 +101,3 @@ export function AboutPage() {
     </div>
   );
 }
-// Helper locally if needed, but imported in project
-import { cn } from '@/lib/utils';

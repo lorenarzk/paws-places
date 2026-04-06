@@ -3,6 +3,37 @@ import type { Env } from './core-utils';
 import { UserEntity, PlaceEntity, ReviewEntity } from "./entities";
 import { ok, bad, notFound, isStr } from './core-utils';
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
+  // OSM PROXY
+  app.post('/api/proxy/osm', async (c) => {
+    try {
+      const { lat, lon, radius = 5000 } = await c.req.json() as { lat: number, lon: number, radius?: number };
+      if (!lat || !lon) return bad(c, 'lat and lon are required');
+      const query = `
+        [out:json][timeout:25];
+        (
+          node["leisure"="dog_park"](around:${radius},${lat},${lon});
+          way["leisure"="dog_park"](around:${radius},${lat},${lon});
+          node["amenity"="cafe"]["dog"="yes"](around:${radius},${lat},${lon});
+          node["amenity"="restaurant"]["dog"="yes"](around:${radius},${lat},${lon});
+          node["tourism"="hotel"]["dog"="yes"](around:${radius},${lat},${lon});
+        );
+        out body;
+        >;
+        out skel qt;
+      `;
+      const response = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        body: `data=${encodeURIComponent(query)}`,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
+      if (!response.ok) throw new Error('OSM API failed');
+      const data = await response.json();
+      return ok(c, data);
+    } catch (err) {
+      console.error('[OSM PROXY ERROR]', err);
+      return bad(c, 'Failed to fetch real-world data');
+    }
+  });
   // PLACES
   app.get('/api/places', async (c) => {
     await PlaceEntity.ensureSeed(c.env);
@@ -14,7 +45,6 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     }
     return ok(c, items);
   });
-
   app.post('/api/places', async (c) => {
     const data = await c.req.json() as any;
     const place = await PlaceEntity.create(c.env, {
