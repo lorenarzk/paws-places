@@ -1,6 +1,6 @@
 # Paws and Places
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)] [cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)] [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/lorenarzk/paws-places)
 
 A full-stack real-time chat application powered by Cloudflare Workers and Durable Objects. Features user management, chat boards with persistent messages, indexed listings, and a responsive React frontend built with modern tools.
 
@@ -94,7 +94,7 @@ const users = await api<{ items: User[]; next: string | null }>('/api/users')
    ```
    Deploys Worker + static assets to Cloudflare.
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)] [cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)] [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/lorenarzk/paws-places)
 
 Your app will be live at `https://your-subdomain.workers.dev` with automatic SPA routing.
 
