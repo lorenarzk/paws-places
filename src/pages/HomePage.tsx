@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/home/HeroSection';
@@ -42,7 +42,7 @@ export function HomePage() {
                 <p className="text-sm text-muted-foreground">Find the perfect place for your furry friends</p>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-4">
-                <Button 
+                <Button
                   onClick={requestLocation}
                   variant={location ? "secondary" : "outline"}
                   className={cn("sketch-border-sm gap-2", location && "bg-secondary text-secondary-foreground")}

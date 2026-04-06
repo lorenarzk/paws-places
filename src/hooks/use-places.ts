@@ -1,9 +1,9 @@
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import type { Place, Review } from '@shared/types';
 import { toast } from 'sonner';
-import { useState, useEffect } from 'react';
-const USER_ID = 'u1'; 
+const USER_ID = 'u1';
 export function useGeolocation() {
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [error, setError] = useState<string | null>(null);

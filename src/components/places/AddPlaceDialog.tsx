@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -47,7 +47,6 @@ export function AddPlaceDialog() {
       image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&q=80&w=800',
     },
   });
-
   useEffect(() => {
     if (createPlace.isSuccess) {
       setOpen(false);
@@ -55,7 +54,6 @@ export function AddPlaceDialog() {
       createPlace.reset();
     }
   }, [createPlace.isSuccess, createPlace, form]);
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await createPlace.mutateAsync({
       ...values,
@@ -138,8 +136,8 @@ export function AddPlaceDialog() {
                 </FormItem>
               )}
             />
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full font-sketch text-lg h-12 bg-primary hover:scale-105 transition-transform"
               disabled={createPlace.isPending}
             >
